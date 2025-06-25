@@ -1,8 +1,8 @@
 import os
 import requests
 import json as complexjson
-from testProject.common.logger import logg
-from testProject.Reader.readData import read_File_Data, baseDir
+from common.logger import logg
+from Reader.readData import read_File_Data, baseDir
 
 # 读取ini文件
 iniPath = os.path.join(baseDir, 'config', 'setting.ini')

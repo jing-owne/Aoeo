@@ -1,14 +1,15 @@
 import hashlib
-import time
-from enum import Enum
+from Logger import EnhancedLogger
+# 先创建实例，再调用方法
+logger = EnhancedLogger()  # 实例化
 
 class TokenGenerator:
     """修复版Token生成器，彻底解决类型问题"""
     INTERFACE_CONFIG = {
         "membershipVerification": ("membershipVerification", "lawson"),
-        "settlementTransactions": ("settlementTransactions", "transKey"),
-        "returnInformation": ("returnInformation", "returnSec"),
-        "couponCorrection": ("couponCorrection", "correctToken")
+        "settlementTransactions": ("settlementTransactions", "lawson"),
+        "returnInformation": ("returnInformation", "lawson"),
+        "couponCorrection": ("couponCorrection", "lawson")
     }
 
     def __init__(self, algorithm='md5'):
@@ -30,7 +31,7 @@ class TokenGenerator:
 # ===== 测试验证 =====
 if __name__ == "__main__":
     generator = TokenGenerator(algorithm='md5')
-    user_id_list = [1900380130238,1900413066794,1900000000026]
+    user_id_list = [1900413066794,1900000000118,1900000000132]
 
     for user_id in user_id_list:
         user_id_str = str(user_id)
@@ -47,6 +48,7 @@ if __name__ == "__main__":
         for name, key in interfaces.items():
             token = generator.generate_token(key, user_id_str)
             # print(f"\n用户 {user_id} 的接口Tokens:")
+            # logger.info(f"{user_id}{name}: {token}")
             print(f"   {name}: {token}")
 
     # # 获取所有支持的接口类型

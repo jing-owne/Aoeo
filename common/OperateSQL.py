@@ -11,14 +11,12 @@ BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 
 data = ConfigINI()
 config_handler = ConfigINI("../config/setting.ini")  # 修复路径
-data = config_handler.load_ini()
+data1 = config_handler.load_ini()
 logger.info(f'读取结果: {data}')
 
-database_config = data.get('Database', {})
+database_config = data1.get('Database', {})
 host = database_config.get('mysql_host')
-print("读取结果:", host)
-
-
+print("读取结果:", database_config)
 
 
 DB_CONF = {
@@ -28,6 +26,7 @@ DB_CONF = {
     "password": conne['MYSQL_PASSWD'],
     "database": conne['MYSQL_DB'],
 }
+
 
 
 

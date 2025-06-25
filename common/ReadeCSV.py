@@ -5,7 +5,6 @@
 """
 
 import csv
-from common.Logger import EnhancedLogger
 from Logger import EnhancedLogger
 # 先创建实例，再调用方法
 logger = EnhancedLogger()  # 实例化
