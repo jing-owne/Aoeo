@@ -1,5 +1,8 @@
 import hashlib
-from Logger import EnhancedLogger
+from Aoeo.common.Logger import EnhancedLogger
+from typing import Dict, Callable
+from contextlib import contextmanager
+
 # 先创建实例，再调用方法
 logger = EnhancedLogger()  # 实例化
 
@@ -14,45 +17,59 @@ class TokenGenerator:
 
     def __init__(self, algorithm='md5'):
         self.algorithm = algorithm.lower()
+        self._user_id_getter: Callable[[], str] = None  # 存储用户ID获取函数
+        self._context_user_id: str = None  # 上下文中的用户ID
+
         if self.algorithm not in ['md5', 'sha1', 'sha256']:
             raise ValueError(f"Unsupported algorithm: {algorithm}")
 
-    def generate_token(self, interface_key: str, user_code: str) -> str:
-        """核心修复：直接使用字符串key访问配置"""
+    def register_user_id_getter(self, getter_func: Callable[[], str]):
+        """注册用户ID获取函数（依赖注入）"""
+        self._user_id_getter = getter_func
+        return self  # 支持链式调用
+
+
+    @contextmanager
+    def user_context(self, user_id: str):
+        """上下文管理器：临时设置用户ID"""
+        original_user_id = self._context_user_id
+        self._context_user_id = user_id
+        try:
+            yield
+        finally:
+            self._context_user_id = original_user_id
+
+    def generate_token(self, interface_key: str) -> str:
+        """生成Token：自动获取用户ID"""
+        # 优先级：上下文 > 注册函数 > 异常
+        if self._context_user_id:
+            user_code = self._context_user_id
+        elif self._user_id_getter:
+            user_code = self._user_id_getter()
+        else:
+            raise RuntimeError("User ID source not configured")
+
         prefix, middle = self.INTERFACE_CONFIG[interface_key]
         original_str = f"{prefix}{middle}{user_code}"
 
-        # 动态选择算法
         hash_obj = hashlib.new(self.algorithm)
         hash_obj.update(original_str.encode('utf-8'))
         return hash_obj.hexdigest().lower()
-
-
-# ===== 测试验证 =====
-if __name__ == "__main__":
-    generator = TokenGenerator(algorithm='md5')
-    user_id_list = [1900413066794,1900000000118,1900000000132]
-
-    for user_id in user_id_list:
-        user_id_str = str(user_id)
-        print(f"\n用户 {user_id} 的Token:")
-
-        # 直接传递字符串key（不再用枚举）
-        interfaces = {
-            "优惠接口": "membershipVerification",
-            "结算接口": "settlementTransactions",
-            "退货接口": "returnInformation",
-            "冲正接口": "couponCorrection"
-        }
-
-        for name, key in interfaces.items():
-            token = generator.generate_token(key, user_id_str)
-            # print(f"\n用户 {user_id} 的接口Tokens:")
-            # logger.info(f"{user_id}{name}: {token}")
-            print(f"   {name}: {token}")
-
-    # # 获取所有支持的接口类型
-    # print("\n支持的接口类型:")
-    # for interface in generator.get_interface_types():
-    #     print(f"- {interface.name}: {interface.value}")
-    # 生成各接口Token
+#
+# if __name__ == '__main__':
+#
+#     Token = TokenGenerator(algorithm='md5')
+#     user_id_list = [1900413066794, 1900000000118, 1900000000132]
+#
+#     for user_id in user_id_list:
+#       user_id_str = str(user_id)
+#       print(f"\n用户 {user_id} 的Token:")
+#
+#       # 直接传递字符串key（不再用枚举）
+#       interfaces = {
+#           "结算接口": "settlementTransactions"      }
+#
+#       with Token.user_context(user_id):
+#           for name, key in interfaces.items():
+#               token = Token.generate_token(key)
+#               print(f"    {token}")

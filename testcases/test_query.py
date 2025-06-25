@@ -2,7 +2,7 @@ import os, sys
 sys.path.append(os.getcwd())
 import allure
 import pytest,os
-from common.Logger import logger
+from Logger import logger
 from utils.httpclient import RestClient
 from common.read_data import ReadFileData
 
