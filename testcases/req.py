@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 
 import os
-from common.Logger import EnhancedLogger
-from readData import read_File_Data, baseDir
 
 data = read_File_Data()
 # 读取ini文件

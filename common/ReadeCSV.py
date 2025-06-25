@@ -5,9 +5,11 @@
 """
 
 import csv
+from common.Logger import EnhancedLogger
 from Logger import EnhancedLogger
 # 先创建实例，再调用方法
 logger = EnhancedLogger()  # 实例化
+
 
 class CSVReader:
     def __init__(self):
@@ -56,7 +58,6 @@ class CSVReader:
 
     def _get_specific_row(self, reader, row_number):
         """获取特定行（从0开始计数）"""
-        global idx
         for idx, row in enumerate(reader):
             if idx == row_number:
                 return row
@@ -67,23 +68,5 @@ if __name__ == '__main__':
     reader = CSVReader()
     # 读取整列（支持列名或索引）
     column_data = reader.read_csv('../config/Https.csv', mode='col', target='method')
-    logger.info(f'读取到列数据，共{len(column_data)}条记录')
-    # for index, value in enumerate(column_data, start=1):
-    #     print(f"第{index}个值: {value}")
-
-    # 补充：表头信息输出
-    print(f"\n表头字段: {reader.columns}")
 
 
-    # # 读取特定行（第2行，索引从0开始）
-    # row_data = reader.read_csv('../config/Https.csv', mode='row', target=1)
-    # print("第2行数据:", row_data)
-    #
-    # # 读取单元格（第2行的'method'列）-- 当前读取的参数是属于忽略首行
-    # cell_data = reader.read_csv('../config/Https.csv', mode='cell', target=(1, 'method'))
-    # print("第二行method字段:", cell_data)
-
-    # all_data = reader.read_csv('../config/Https.csv', mode='all')
-    # # 循环打印每一行（字典形式）
-    # for idx, row_dict in enumerate(all_data, start=1):
-    #     print(f"第{idx}行内容: {row_dict}")
