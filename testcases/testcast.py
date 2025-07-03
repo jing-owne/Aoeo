@@ -2,9 +2,15 @@
 """执行优惠计算和结算流程"""
 
 import time
+import sys
+import os
+current_dir = os.path.dirname(os.path.abspath(__file__))
+project_root = os.path.dirname(os.path.dirname(current_dir))
+sys.path.append(project_root)
+
 from Aoeo.common.Logger import EnhancedLogger
-from getMemberDiscount import DiscountService
-from settlementTransactions import SettlementService
+from Aoeo.testcases.getMemberDiscount import DiscountService
+from Aoeo.testcases.settlementTransactions import SettlementService
 from Aoeo.common.TokenGenerator import TokenGenerator
 from concurrent.futures import ThreadPoolExecutor
 
